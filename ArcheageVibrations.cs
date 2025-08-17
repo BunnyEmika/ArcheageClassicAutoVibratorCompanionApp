@@ -187,15 +187,15 @@ namespace ArcheageVibrations
         {
             // Resolve mailbox path
             string doc = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string dir = Path.Combine(doc, "AAClassic", "Addon", "vb");
+            string dir = Path.Combine(doc, "AAClassic", "Addon", "auto_vibrator");
             if (!Directory.Exists(dir))
             {
-                Console.WriteLine("Addon path not found. Is it installed or is your addon folder not default?");
+                Console.WriteLine("Addon path not found. Is the addon installed? or is your addon folder not default?");
                 return;
             }
 
             string path = Path.Combine(dir, "aac-av-mailbox.txt");
-            Console.WriteLine($"Watching file: {path}");
+            Console.WriteLine($"Ready and awaiting addon output..");
             try { File.WriteAllText(path, ""); } catch { }
 
             while (!ct.IsCancellationRequested)
@@ -216,8 +216,6 @@ namespace ArcheageVibrations
 
                 if (!string.IsNullOrWhiteSpace(payload))
                 {
-                    Console.WriteLine(payload);
-
                     payload = payload.Trim();
                     if (payload.Length > 0)
                     {
@@ -234,8 +232,6 @@ namespace ArcheageVibrations
                         switch (tag)
                         {
                             case "VIBE":
-                                Console.WriteLine("Detected vibe code");
-                                // parts[1] = intensity (0..1), parts[2] = duration ms (quoted)
                                 float.TryParse(SafeGet(parts, 1), out var intenPct);
                                 int.TryParse(SafeGet(parts, 2).Trim('"'), out var durMs);
                                 var amount = Math.Clamp(intenPct, 0f, 1f);
@@ -247,7 +243,7 @@ namespace ArcheageVibrations
                                 };
                                 lock (pulsesLock) { pulses.Add(pulse); }
 
-                                Console.WriteLine($"Pulse +{amount:P0} for {(float)durMs / 1000f:0.###}s (stacking).");
+                                Console.WriteLine($"Pulse +{amount:P0} for {(float)durMs / 1000f:0.###}s (stackable).");
                                 break;
 
                             case "STOP":
